@@ -379,12 +379,12 @@ jobs:
           cargo test --locked -p zakura-state balance_rollback_replay_and_fork_equivalence
 
   sprout-disabled:
-    name: consensus without sprout
+    name: consensus and state without sprout
     needs: changes
     # zakurad enables `sprout` by default, and workspace feature unification
-    # turns it on for zakura-consensus in the shared archive. Test the
-    # consensus crate on its own, where `sprout` is off, so the disabled path
-    # keeps coverage.
+    # turns it on for zakura-consensus and zakura-state in the shared archive.
+    # Test each crate on its own, where `sprout` is off, so the disabled paths
+    # keep coverage.
     if: needs.changes.outputs.rust == 'true' || github.event_name != 'pull_request'
     permissions:
       contents: read
@@ -400,6 +400,8 @@ jobs:
       - uses: ./.github/actions/setup-zakura-build
       - name: Test zakura-consensus without Sprout verification
         run: cargo test --locked -p zakura-consensus
+      - name: Test zakura-state without the Sprout note commitment tree
+        run: cargo test --locked -p zakura-state
 
   network-dependent:
     name: network-dependent acceptance tests

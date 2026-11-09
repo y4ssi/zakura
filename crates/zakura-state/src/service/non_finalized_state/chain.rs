@@ -39,6 +39,7 @@ use crate::{
 
 #[cfg(feature = "indexer")]
 use crate::request::Spend;
+use crate::service::finalized_state::update_note_commitment_trees;
 
 use self::{counted_set::CountedSet, height_map::HeightMap, index::TransparentTransfers};
 use super::{AddressTransfers, SharedMap};
@@ -1830,7 +1831,10 @@ impl Chain {
             });
 
             // Spawns a separate rayon task for each note commitment tree
-            tree_result = Some(nct.update_trees_parallel(&contextually_valid.block.clone()));
+            tree_result = Some(update_note_commitment_trees(
+                &mut nct,
+                &contextually_valid.block.clone(),
+            ));
         });
 
         tree_result.expect("scope has already finished")?;
